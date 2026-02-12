@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - scene - multiple - compare</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			.container {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - multiple scenes comparison<br />
+		</div>
+
+		<div class="container">
+			<div class="slider"></div>
+		</div>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+			let container, camera, renderer, controls, light;
+			let scene;
+			let objects = []
+			let zpos = 100
+
+			init();
+
+			function init() {
+
+				container = document.querySelector( '.container' );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x000000 );
+
+				camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.z = 6;
+				camera.lookAt(0,0,100)
+
+				controls = new OrbitControls( camera, container );
+        /*
+        // white spotlight shining from the side, modulated by a texture
+        light = new THREE.SpotLight( 0xffffff );
+        light.position.set( 100, 1000, 100 );
+        light.shadow.mapSize.width = 1024;
+        light.shadow.mapSize.height = 1024;
+        light.shadow.camera.near = 500;
+        light.shadow.camera.far = 4000;
+        light.shadow.camera.fov = 10;
+
+				//light = new THREE.HemisphereLight( 0xffffff, 0x444444, 3 );
+				//light.position.set( - 2, 2, 2 );
+				scene.add( light);
+				*/
+
+				initMeshes();
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setAnimationLoop( animate );
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+      function moveObjects () {
+        
+        for (let i = 0; i < objects.length; i++) {
+          if (zpos < objects[i].position.z - 100) {
+            objects[i].position.set(objects[i].position.x, objects[i].position.y, zpos-100)
+          }
+        }
+        
+      }
+			function initMeshes() {
+
+				const geometry = new THREE.IcosahedronGeometry( 0.15, 1);
+				
+				let c = 100
+				
+				for (let n = 0; n < c; n++) {
+				  let mat = new THREE.MeshStandardMaterial()
+				  mat.color = (Math.random(),0,0)
+  				let mesh = new THREE.Mesh( geometry, );
+  				mesh.position.set(Math.random()*-30 + 15, Math.random()*-30 + 15, Math.random()*-200)
+  				objects.push(mesh)
+  				scene.add( mesh );
+				}
+			}
+
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+			  
+			  zpos = zpos - 0.5
+			  
+			  camera.position.set(camera.position.x, camera.position.y, zpos)
+			  
+			  moveObjects()
+
+				//light.position.set(camera.position.x, camera.position.y, camera.position.z + 1000);
+				
+				renderer.render(scene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>
