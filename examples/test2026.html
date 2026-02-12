@@ -52,6 +52,7 @@
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x000000 );
+				scene.fog = new THREE.Fog( 0x000000, 30, 80 );
 
 				camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 100 );
 				camera.position.z = 6;
@@ -67,11 +68,12 @@
         light.shadow.camera.near = 500;
         light.shadow.camera.far = 4000;
         light.shadow.camera.fov = 10;
+        				scene.add( light);
 
-				//light = new THREE.HemisphereLight( 0xffffff, 0x444444, 3 );
-				//light.position.set( - 2, 2, 2 );
+*/
+				light = new THREE.HemisphereLight( 0x0000ff, 0x00ffff, 3);
 				scene.add( light);
-				*/
+				
 
 				initMeshes();
 
@@ -88,8 +90,8 @@
       function moveObjects () {
         
         for (let i = 0; i < objects.length; i++) {
-          if (zpos < objects[i].position.z - 100) {
-            objects[i].position.set(objects[i].position.x, objects[i].position.y, zpos-100)
+          if (zpos < objects[i].position.z - 20) {
+            objects[i].position.set(objects[i].position.x, objects[i].position.y, zpos - 1000)
           }
         }
         
@@ -98,13 +100,16 @@
 
 				const geometry = new THREE.IcosahedronGeometry( 0.15, 1);
 				
-				let c = 100
+				let c =  5000
 				
 				for (let n = 0; n < c; n++) {
-				  let mat = new THREE.MeshStandardMaterial()
-				  mat.color = (Math.random(),0,0)
-  				let mesh = new THREE.Mesh( geometry, );
-  				mesh.position.set(Math.random()*-30 + 15, Math.random()*-30 + 15, Math.random()*-200)
+				  
+				  let col = new THREE.Color()
+				  col.setRGB( Math.random(), Math.random()%5, 0 )
+				  let mat = new THREE.MeshStandardMaterial( { color: col })
+				  
+  				let mesh = new THREE.Mesh( geometry, mat);
+  				mesh.position.set(Math.cos(n)*2,Math.sin(n)*5, 10 - (n))
   				objects.push(mesh)
   				scene.add( mesh );
 				}
@@ -122,13 +127,13 @@
 
 			function animate() {
 			  
-			  zpos = zpos - 0.5
+			  zpos = zpos - 1
 			  
 			  camera.position.set(camera.position.x, camera.position.y, zpos)
 			  
 			  moveObjects()
 
-				//light.position.set(camera.position.x, camera.position.y, camera.position.z + 1000);
+				light.position.set(camera.position.x, camera.position.y, -100);
 				
 				renderer.render(scene, camera );
 
